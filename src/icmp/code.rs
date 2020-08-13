@@ -102,6 +102,19 @@ pub enum ParameterProblem {
 	Unknown(u8),
 }
 
+/// Codes for Parameter Problem packets.
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+pub enum TimeExceeded {
+	///
+	TimeToLiveExceeded,
+
+	///
+	FragmentReassemblyTimeExceeded,
+
+	///
+	Unknown(u8),
+}
+
 impl From<u8> for DestinationUnreachable {
 	fn from(value: u8) -> Self {
 		use self::DestinationUnreachable::*;
@@ -204,6 +217,30 @@ impl Into<u8> for ParameterProblem {
 			MissingRequiredData   => 1,
 			BadLength             => 2,
 			Unknown(v)            => v,
+		}
+	}
+}
+
+impl From<u8> for TimeExceeded {
+	fn from(value: u8) -> Self {
+		use self::TimeExceeded::*;
+
+		match value {
+			0 => TimeToLiveExceeded,
+			1 => FragmentReassemblyTimeExceeded,
+			v => Unknown(v),
+		}
+	}
+}
+
+impl Into<u8> for TimeExceeded {
+	fn into(self) -> u8 {
+		use self::TimeExceeded::*;
+
+		match self {
+			TimeToLiveExceeded              => 0,
+			FragmentReassemblyTimeExceeded  => 1,
+			Unknown(v)                      => v,
 		}
 	}
 }

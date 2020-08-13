@@ -19,7 +19,7 @@ use crate::error::*;
 use crate::buffer::{self, Buffer};
 use crate::builder::{Builder as Build, Finalization};
 use crate::icmp::checksum;
-use crate::icmp::{echo, timestamp, information};
+use crate::icmp::{echo, timestamp, information, previous};
 
 /// ICMP packet builder.
 #[derive(Debug)]
@@ -74,6 +74,14 @@ impl<B: Buffer> Builder<B> {
 		timestamp.finalizer().extend(self.finalizer);
 
 		Ok(timestamp)
+	}
+
+	/// Create a response for a previous packet.
+	pub fn previous(self) -> Result<previous::Builder<B>> {
+		let mut previous = previous::Builder::with(self.buffer)?;
+		previous.finalizer().extend(self.finalizer);
+
+		Ok(previous)
 	}
 }
 
